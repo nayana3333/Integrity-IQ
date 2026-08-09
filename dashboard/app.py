@@ -68,6 +68,27 @@ def severity_badge(severity: str | None) -> str:
     return f"{colors.get(severity, '⚪')} {(severity or 'n/a').upper()}"
 
 
+def _select_with_sticky_default(
+    label: str, options: dict[str, dict], session_key: str, create_label: str
+) -> str:
+    """A selectbox that re-selects the item just created/picked after a
+    st.rerun(), instead of silently resetting to `create_label` every time -
+    Streamlit selectboxes have no memory of their own across reruns, so
+    without this the sidebar looked broken (create succeeds, but the new
+    course/student never appears selected) even though the backend call
+    worked fine.
+    """
+    labels = [create_label] + list(options.keys())
+    default_index = 0
+    selected_id = st.session_state.get(session_key)
+    if selected_id:
+        for i, item_label in enumerate(labels):
+            if item_label != create_label and options[item_label]["id"] == selected_id:
+                default_index = i
+                break
+    return st.selectbox(label, labels, index=default_index)
+
+
 def course_picker() -> dict | None:
     resp = api("GET", "/courses")
     courses = resp.json() if resp.status_code == 200 else []
@@ -75,7 +96,9 @@ def course_picker() -> dict | None:
     with st.sidebar:
         st.subheader("Course")
         options = {f"{c['code']} — {c['name']}": c for c in courses}
-        choice = st.selectbox("Select a course", ["<create new>"] + list(options.keys()))
+        choice = _select_with_sticky_default(
+            "Select a course", options, "selected_course_id", "<create new>"
+        )
 
         if choice == "<create new>":
             with st.form("new_course"):
@@ -84,11 +107,16 @@ def course_picker() -> dict | None:
                 if st.form_submit_button("Create course") and code and name:
                     r = api("POST", "/courses", json={"code": code, "name": name})
                     if r.status_code == 201:
+                        st.session_state["selected_course_id"] = r.json()["id"]
+                        st.session_state.pop("selected_student_id", None)
                         st.rerun()
                     else:
                         st.error(r.text)
             return None
-        return options[choice]
+
+        selected = options[choice]
+        st.session_state["selected_course_id"] = selected["id"]
+        return selected
 
 
 def student_picker(course: dict) -> dict | None:
@@ -98,7 +126,9 @@ def student_picker(course: dict) -> dict | None:
     with st.sidebar:
         st.subheader("Student")
         options = {f"{s['name']} ({s['external_id']})": s for s in students}
-        choice = st.selectbox("Select a student", ["<add new>"] + list(options.keys()))
+        choice = _select_with_sticky_default(
+            "Select a student", options, "selected_student_id", "<add new>"
+        )
 
         if choice == "<add new>":
             with st.form("new_student"):
@@ -111,11 +141,15 @@ def student_picker(course: dict) -> dict | None:
                         json={"external_id": ext_id, "name": name},
                     )
                     if r.status_code == 201:
+                        st.session_state["selected_student_id"] = r.json()["id"]
                         st.rerun()
                     else:
                         st.error(r.text)
             return None
-        return options[choice]
+
+        selected = options[choice]
+        st.session_state["selected_student_id"] = selected["id"]
+        return selected
 
 
 def tab_upload(course: dict, student: dict | None):

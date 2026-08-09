@@ -5,7 +5,13 @@ email-validator>=2.2.0
 sqlalchemy==2.0.35
 python-multipart==0.0.9
 python-jose[cryptography]==3.3.0
-passlib[bcrypt]==1.7.4
+passlib==1.7.4
+# Pinned: passlib 1.7.4's bcrypt backend reads bcrypt.__about__.__version__ to
+# detect the backend version, which bcrypt>=4.1 removed - that raises
+# "password cannot be longer than 72 bytes" on ANY password (even short ones)
+# because passlib's version-detection fallback miscomputes the truncation
+# check. bcrypt 4.0.1 is the newest release that still has __about__.
+bcrypt==4.0.1
 
 pypdf==5.0.1
 python-docx==1.1.2

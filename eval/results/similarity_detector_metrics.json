@@ -1,0 +1,50 @@
+{
+  "embedding_model": "all-MiniLM-L6-v2",
+  "dataset": "google-research-datasets/paws (labeled_final, test split)",
+  "adversarial_task": {
+    "description": "PAWS's own label: genuine paraphrase vs. constructed hard negative (same words, different meaning). A generic embedding model is expected to struggle here - see README.",
+    "n_pairs": 600,
+    "positive_rate": 0.4066666666666667,
+    "threshold_used": 0.8,
+    "accuracy": 0.4116666666666667,
+    "precision": 0.4074702886247878,
+    "recall": 0.9836065573770492,
+    "f1": 0.5762304921968787,
+    "roc_auc": 0.631803739178486,
+    "confusion_matrix": [
+      [
+        7,
+        349
+      ],
+      [
+        4,
+        240
+      ]
+    ],
+    "best_possible_threshold": 0.9466426372528076,
+    "best_possible_f1": 0.5877551020408164
+  },
+  "realistic_task": {
+    "description": "Genuine paraphrase (PAWS label=1) vs. randomly-paired unrelated sentence - representative of real plagiarism-detection non-matches.",
+    "n_pairs": 488,
+    "positive_rate": 0.5,
+    "threshold_used": 0.8,
+    "accuracy": 0.9877049180327869,
+    "precision": 0.9917355371900827,
+    "recall": 0.9836065573770492,
+    "f1": 0.9876543209876543,
+    "roc_auc": 0.9959604273044881,
+    "confusion_matrix": [
+      [
+        242,
+        2
+      ],
+      [
+        4,
+        240
+      ]
+    ],
+    "best_possible_threshold": 0.729070782661438,
+    "best_possible_f1": 0.9938900203665988
+  }
+}

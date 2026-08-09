@@ -1,0 +1,25 @@
+{
+  "n_authors": 150,
+  "n_comparisons": 300,
+  "concat_n_comments_per_doc": 6,
+  "avg_words_per_pseudo_document": 753.3933333333333,
+  "best_threshold": 1.8086498246593874,
+  "accuracy": 0.5933333333333334,
+  "precision": 0.556910569105691,
+  "recall": 0.9133333333333333,
+  "f1": 0.6919191919191919,
+  "roc_auc": 0.6509333333333334,
+  "confusion_matrix": [
+    [
+      41,
+      109
+    ],
+    [
+      13,
+      137
+    ]
+  ],
+  "dataset": "manu/eli5_authorship_attribution (eli5_authors.csv, sampled, comments concatenated to approximate assignment-length documents)",
+  "baseline_docs_per_author": 3,
+  "note": "This signal is intentionally weighted lowest of the three in RiskFusionModel's default weights - it's a real but noisier signal than semantic similarity or AI-text detection, used as corroborating evidence (esp. for ghostwriting, which the other two signals structurally cannot catch) rather than a standalone detector."
+}

@@ -1,0 +1,40 @@
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+pydantic==2.9.2
+email-validator>=2.2.0
+sqlalchemy==2.0.35
+python-multipart==0.0.9
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+pypdf==5.0.1
+python-docx==1.1.2
+
+sentence-transformers>=3.1.1
+scikit-learn>=1.5.2
+textstat>=0.7.4
+nltk>=3.9.1
+transformers>=4.45.1
+# Pinned (not >=): later torch builds (2.7+) have been observed to fail with
+# "WinError 1114: DLL initialization routine failed" loading torch/lib/c10.dll
+# on this Windows setup. 2.6.0 is the newest version confirmed to actually
+# import cleanly here - if you're on a different machine and don't hit this,
+# feel free to loosen the pin.
+torch==2.6.0
+
+pandas>=2.2.3
+numpy>=1.26.4
+joblib>=1.4.2
+
+streamlit>=1.39.0
+plotly>=5.24.1
+requests>=2.32.3
+
+langgraph>=0.2.34
+langchain-core>=0.3.9
+ibm-watsonx-ai>=1.1.14
+
+datasets>=3.0.1
+
+pytest==8.3.3
+httpx==0.27.2

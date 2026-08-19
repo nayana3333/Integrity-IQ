@@ -64,7 +64,7 @@ def load_author_comments(min_comments: int, max_rows: int = 600_000) -> dict[str
     df = df[df["text"].str.split().str.len() >= MIN_WORDS]
 
     by_author: dict[str, list[str]] = defaultdict(list)
-    for user, text in zip(df["user"], df["text"]):
+    for user, text in zip(df["user"], df["text"], strict=True):
         by_author[str(user)].append(text)
 
     return {aid: posts for aid, posts in by_author.items() if len(posts) >= min_comments}

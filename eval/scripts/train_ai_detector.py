@@ -123,7 +123,7 @@ def main():
         "confusion_matrix": confusion_matrix(y_test, y_pred).tolist(),
         "feature_names": AI_FEATURE_NAMES,
         "learned_coefficients": dict(
-            zip(AI_FEATURE_NAMES, pipeline.named_steps["clf"].coef_[0].tolist())
+            zip(AI_FEATURE_NAMES, pipeline.named_steps["clf"].coef_[0].tolist(), strict=True)
         ),
         "dataset": "Hello-SimpleAI/HC3 (config=all)",
     }

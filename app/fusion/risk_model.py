@@ -20,8 +20,8 @@ course, at which point `retrain()` swaps in a learned logistic regression.
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass, field
-from enum import Enum
+from dataclasses import dataclass
+from enum import StrEnum
 from pathlib import Path
 
 import joblib
@@ -40,7 +40,7 @@ _DEFAULT_BIAS = -2.6
 MIN_LABELS_TO_TRAIN = 25
 
 
-class Severity(str, Enum):
+class Severity(StrEnum):
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -100,7 +100,7 @@ class RiskFusionModel:
             z = float(x[0] @ _DEFAULT_WEIGHTS + _DEFAULT_BIAS)
             probability = 1.0 / (1.0 + math.exp(-z))
 
-        components = dict(zip(FEATURE_NAMES, x[0].tolist()))
+        components = dict(zip(FEATURE_NAMES, x[0].tolist(), strict=True))
         return RiskReport(
             submission_id=submission_id,
             probability=probability,
@@ -132,5 +132,5 @@ class RiskFusionModel:
         return {
             "trained": True,
             "n_samples": len(y),
-            "learned_weights": dict(zip(FEATURE_NAMES, clf.coef_[0].tolist())),
+            "learned_weights": dict(zip(FEATURE_NAMES, clf.coef_[0].tolist(), strict=True)),
         }

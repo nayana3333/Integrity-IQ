@@ -48,7 +48,9 @@ class ExplanationAgent:
         prompt = self._build_prompt(result, student_label, assignment_title)
         try:
             return self._client.generate(f"{_SYSTEM_PROMPT}\n\n{prompt}")
-        except Exception:
+        except Exception:  # noqa: BLE001 - deliberately broad: any LLM-backend failure
+            # (missing credentials, network, rate limit, model error) should degrade to
+            # the template, never break the report - see module docstring.
             return self._template_fallback(result, student_label, assignment_title)
 
     def _build_prompt(self, result: DetectionResult, student_label: str, assignment_title: str) -> str:

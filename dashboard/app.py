@@ -4,6 +4,9 @@ A thin Streamlit client over the FastAPI backend - deliberately has zero
 detection logic of its own, it only calls the API and renders what comes
 back. Keeping the UI dumb like this means the same backend could grow a
 React frontend later without touching app/ at all.
+
+Visual layer lives in `theme.py` (CSS injection + small HTML component
+helpers) so this file stays about data flow, not markup.
 """
 from __future__ import annotations
 
@@ -13,10 +16,12 @@ import pandas as pd
 import plotly.express as px
 import requests
 import streamlit as st
+from theme import empty_state, header, inject_css, severity_badge_html, stat_card
 
 API_BASE_URL = os.environ.get("API_BASE_URL", "http://localhost:8000")
 
 st.set_page_config(page_title="IntegrityIQ", page_icon="🛡️", layout="wide")
+inject_css()
 
 
 def api(method: str, path: str, **kwargs) -> requests.Response:
@@ -27,45 +32,57 @@ def api(method: str, path: str, **kwargs) -> requests.Response:
 
 
 def require_login():
-    st.title("🛡️ IntegrityIQ")
-    st.caption("Adaptive academic-integrity assistant — instructor console")
+    st.markdown('<div class="iq-auth-wrap">', unsafe_allow_html=True)
+    st.markdown(
+        """
+        <div class="iq-auth-brand">
+            <div class="iq-mark">🛡️</div>
+            <h1>IntegrityIQ</h1>
+            <p>Adaptive academic-integrity assistant — instructor console</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    tab_login, tab_register = st.tabs(["Log in", "Register"])
+    with st.container(border=True):
+        tab_login, tab_register = st.tabs(["Log in", "Register"])
 
-    with tab_login:
-        with st.form("login_form"):
-            email = st.text_input("Email")
-            password = st.text_input("Password", type="password")
-            submitted = st.form_submit_button("Log in")
-        if submitted:
-            resp = api("POST", "/auth/login", data={"username": email, "password": password})
-            if resp.status_code == 200:
-                st.session_state["token"] = resp.json()["access_token"]
-                st.rerun()
-            else:
-                st.error(resp.json().get("detail", "Login failed"))
+        with tab_login:
+            with st.form("login_form"):
+                email = st.text_input("Email", placeholder="you@school.edu")
+                password = st.text_input("Password", type="password", placeholder="••••••••")
+                submitted = st.form_submit_button("Log in", type="primary", use_container_width=True)
+            if submitted:
+                resp = api("POST", "/auth/login", data={"username": email, "password": password})
+                if resp.status_code == 200:
+                    st.session_state["token"] = resp.json()["access_token"]
+                    st.session_state["email"] = email
+                    st.rerun()
+                else:
+                    st.error(resp.json().get("detail", "Login failed"))
 
-    with tab_register:
-        with st.form("register_form"):
-            name = st.text_input("Name")
-            reg_email = st.text_input("Email", key="reg_email")
-            reg_password = st.text_input("Password", type="password", key="reg_password")
-            reg_submitted = st.form_submit_button("Create account")
-        if reg_submitted:
-            resp = api(
-                "POST",
-                "/auth/register",
-                json={"name": name, "email": reg_email, "password": reg_password},
-            )
-            if resp.status_code == 201:
-                st.success("Account created — log in on the other tab.")
-            else:
-                st.error(resp.json().get("detail", "Registration failed"))
+        with tab_register:
+            with st.form("register_form"):
+                name = st.text_input("Name", placeholder="Jane Doe")
+                reg_email = st.text_input("Email", key="reg_email", placeholder="you@school.edu")
+                reg_password = st.text_input(
+                    "Password", type="password", key="reg_password", placeholder="••••••••"
+                )
+                reg_submitted = st.form_submit_button(
+                    "Create account", type="primary", use_container_width=True
+                )
+            if reg_submitted:
+                resp = api(
+                    "POST",
+                    "/auth/register",
+                    json={"name": name, "email": reg_email, "password": reg_password},
+                )
+                if resp.status_code == 201:
+                    st.success("Account created — switch to the Log in tab.")
+                else:
+                    st.error(resp.json().get("detail", "Registration failed"))
 
-
-def severity_badge(severity: str | None) -> str:
-    colors = {"low": "🟢", "medium": "🟡", "high": "🟠", "critical": "🔴"}
-    return f"{colors.get(severity, '⚪')} {(severity or 'n/a').upper()}"
+    st.markdown("</div>", unsafe_allow_html=True)
 
 
 def _select_with_sticky_default(
@@ -78,7 +95,7 @@ def _select_with_sticky_default(
     course/student never appears selected) even though the backend call
     worked fine.
     """
-    labels = [create_label] + list(options.keys())
+    labels = [create_label, *options.keys()]
     default_index = 0
     selected_id = st.session_state.get(session_key)
     if selected_id:
@@ -86,7 +103,7 @@ def _select_with_sticky_default(
             if item_label != create_label and options[item_label]["id"] == selected_id:
                 default_index = i
                 break
-    return st.selectbox(label, labels, index=default_index)
+    return st.selectbox(label, labels, index=default_index, label_visibility="collapsed")
 
 
 def course_picker() -> dict | None:
@@ -94,17 +111,17 @@ def course_picker() -> dict | None:
     courses = resp.json() if resp.status_code == 200 else []
 
     with st.sidebar:
-        st.subheader("Course")
+        st.markdown("**:material/school: Course**")
         options = {f"{c['code']} — {c['name']}": c for c in courses}
         choice = _select_with_sticky_default(
-            "Select a course", options, "selected_course_id", "<create new>"
+            "Select a course", options, "selected_course_id", "+ New course"
         )
 
-        if choice == "<create new>":
-            with st.form("new_course"):
-                code = st.text_input("Course code (e.g. CS301)")
-                name = st.text_input("Course name")
-                if st.form_submit_button("Create course") and code and name:
+        if choice == "+ New course":
+            with st.container(border=True):
+                code = st.text_input("Course code", placeholder="CS301", key="new_course_code")
+                name = st.text_input("Course name", placeholder="Intro to Algorithms", key="new_course_name")
+                if st.button("Create course", type="primary", use_container_width=True) and code and name:
                     r = api("POST", "/courses", json={"code": code, "name": name})
                     if r.status_code == 201:
                         st.session_state["selected_course_id"] = r.json()["id"]
@@ -124,17 +141,17 @@ def student_picker(course: dict) -> dict | None:
     students = resp.json() if resp.status_code == 200 else []
 
     with st.sidebar:
-        st.subheader("Student")
+        st.markdown("**:material/person: Student**")
         options = {f"{s['name']} ({s['external_id']})": s for s in students}
         choice = _select_with_sticky_default(
-            "Select a student", options, "selected_student_id", "<add new>"
+            "Select a student", options, "selected_student_id", "+ New student"
         )
 
-        if choice == "<add new>":
-            with st.form("new_student"):
-                ext_id = st.text_input("Roll number / ID")
-                name = st.text_input("Full name")
-                if st.form_submit_button("Add student") and ext_id and name:
+        if choice == "+ New student":
+            with st.container(border=True):
+                ext_id = st.text_input("Roll number / ID", placeholder="T001", key="new_student_id")
+                name = st.text_input("Full name", placeholder="Alex Rivera", key="new_student_name")
+                if st.button("Add student", type="primary", use_container_width=True) and ext_id and name:
                     r = api(
                         "POST",
                         f"/courses/{course['id']}/students",
@@ -153,16 +170,26 @@ def student_picker(course: dict) -> dict | None:
 
 
 def tab_upload(course: dict, student: dict | None):
-    st.header("Upload & analyze a submission")
     if student is None:
-        st.info("Pick or add a student in the sidebar first.")
+        empty_state("👤", "Pick or add a student in the sidebar to start an integrity check.")
         return
 
-    assignment_title = st.text_input("Assignment title", value="Assignment 1")
-    uploaded = st.file_uploader("Submission file", type=["pdf", "docx", "txt"])
+    with st.container(border=True):
+        assignment_title = st.text_input("Assignment title", value="Assignment 1")
+        uploaded = st.file_uploader(
+            "Submission file", type=["pdf", "docx", "txt"], label_visibility="visible"
+        )
+        run = st.button(
+            ":material/search_insights: Run integrity check",
+            type="primary",
+            use_container_width=True,
+            disabled=uploaded is None,
+        )
 
-    if uploaded and st.button("Run integrity check", type="primary"):
-        with st.spinner("Running similarity search, AI-detection, style analysis, and generating the report..."):
+    if uploaded and run:
+        with st.spinner(
+            "Running similarity search, AI-detection, style analysis, and generating the report…"
+        ):
             files = {"file": (uploaded.name, uploaded.getvalue())}
             resp = api(
                 "POST",
@@ -174,74 +201,103 @@ def tab_upload(course: dict, student: dict | None):
             st.error(resp.text)
             return
 
-        result = resp.json()
-        render_submission_report(result)
+        st.markdown("#### Result")
+        render_submission_report(resp.json())
 
 
 def render_submission_report(result: dict):
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Risk score", f"{result['risk_probability']:.0%}")
-    col2.metric("Severity", severity_badge(result["severity"]))
     comps = result.get("components") or {}
-    col3.metric("Max similarity match", f"{comps.get('max_similarity', 0):.0%}")
+    st.markdown(
+        '<div class="iq-stats">'
+        + stat_card("Risk score", f"{result['risk_probability']:.0%}")
+        + stat_card("Severity", severity_badge_html(result["severity"]))
+        + stat_card("Max similarity", f"{comps.get('max_similarity', 0):.0%}")
+        + stat_card("AI-text likelihood", f"{comps.get('ai_proba', 0):.0%}")
+        + "</div>",
+        unsafe_allow_html=True,
+    )
 
-    st.subheader("Instructor report")
-    st.write(result.get("explanation") or "_No report generated._")
+    st.markdown(
+        f"""
+        <div class="iq-panel">
+            <div class="iq-panel-label">:material/description: Instructor report</div>
+            {result.get('explanation') or '<em>No report generated.</em>'}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     flags = result.get("similarity_flags") or []
     if flags:
-        st.subheader(f"Flagged passages ({len(flags)})")
+        st.markdown(f"**:material/flag: Flagged passages** &nbsp;·&nbsp; {len(flags)} match(es)")
         for flag in flags:
             with st.expander(f"Chunk {flag['chunk_index']} — {flag['similarity']:.0%} similarity"):
                 c1, c2 = st.columns(2)
-                c1.markdown("**This submission**")
-                c1.write(flag["query_text"])
-                c2.markdown(f"**Matched student ({flag['matched_student_id'][:8]}…)**")
-                c2.write(flag["matched_text"])
+                with c1:
+                    st.markdown('<div class="iq-diff-label">This submission</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="iq-diff-text">{flag["query_text"]}</div>', unsafe_allow_html=True)
+                with c2:
+                    st.markdown(
+                        f'<div class="iq-diff-label">Matched student ({flag["matched_student_id"][:8]}…)</div>',
+                        unsafe_allow_html=True,
+                    )
+                    st.markdown(f'<div class="iq-diff-text">{flag["matched_text"]}</div>', unsafe_allow_html=True)
 
 
 def tab_flagged(course: dict):
-    st.header("Flagged submissions")
     resp = api("GET", f"/courses/{course['id']}/submissions")
     submissions = resp.json() if resp.status_code == 200 else []
     submissions = sorted(submissions, key=lambda s: s.get("risk_probability") or 0, reverse=True)
 
     if not submissions:
-        st.info("No submissions analyzed yet.")
+        empty_state("📭", "No submissions analyzed yet — upload one in the first tab.")
         return
 
     for sub in submissions:
-        label = f"{severity_badge(sub['severity'])} — {sub['filename']} — {sub.get('risk_probability', 0):.0%}"
+        badge = severity_badge_html(sub["severity"])
+        label = f"{sub['filename']}  ·  {sub.get('risk_probability', 0):.0%} risk"
         with st.expander(label):
+            st.markdown(badge, unsafe_allow_html=True)
             render_submission_report(sub)
             c1, c2 = st.columns(2)
-            if c1.button("✅ Confirm misconduct", key=f"confirm_{sub['id']}"):
+            if c1.button(
+                ":material/check_circle: Confirm misconduct", key=f"confirm_{sub['id']}", use_container_width=True
+            ):
                 api("POST", f"/submissions/{sub['id']}/feedback", json={"verdict": "confirmed"})
                 st.success("Recorded.")
-            if c2.button("❌ False positive", key=f"fp_{sub['id']}"):
+            if c2.button(":material/cancel: False positive", key=f"fp_{sub['id']}", use_container_width=True):
                 api("POST", f"/submissions/{sub['id']}/feedback", json={"verdict": "false_positive"})
                 st.success("Recorded.")
 
 
 def tab_retrain(course: dict):
-    st.header("Adaptive model — retrain from instructor feedback")
-    st.write(
-        "Once enough submissions have a confirmed/false-positive verdict, "
-        "retraining recalibrates how much this course's model trusts each "
-        "signal (similarity vs. AI-detection vs. style drift)."
-    )
-    if st.button("Retrain now", type="primary"):
-        resp = api("POST", f"/courses/{course['id']}/retrain")
-        result = resp.json()
-        if result.get("trained"):
-            st.success(f"Retrained on {result['n_samples']} labeled submissions.")
-            st.json(result["learned_weights"])
-        else:
-            st.warning(result.get("reason", "Not enough data to retrain yet."))
+    with st.container(border=True):
+        st.markdown("##### :material/model_training: Adaptive risk model")
+        st.caption(
+            "Once enough submissions have a confirmed/false-positive verdict, retraining "
+            "recalibrates how much this course's model trusts each signal — semantic "
+            "similarity, AI-text detection, and stylometric drift."
+        )
+        if st.button("Retrain now", type="primary"):
+            resp = api("POST", f"/courses/{course['id']}/retrain")
+            result = resp.json()
+            if result.get("trained"):
+                st.success(f"Retrained on {result['n_samples']} labeled submissions.")
+                st.json(result["learned_weights"])
+            else:
+                st.warning(result.get("reason", "Not enough data to retrain yet."))
+
+
+_PLOTLY_LAYOUT = {
+    "paper_bgcolor": "rgba(0,0,0,0)",
+    "plot_bgcolor": "rgba(0,0,0,0)",
+    "font": {"family": "Inter, sans-serif", "color": "#9099ab"},
+    "margin": {"l": 10, "r": 10, "t": 40, "b": 10},
+    "legend": {"bgcolor": "rgba(0,0,0,0)"},
+}
 
 
 def tab_style_trends(course: dict):
-    st.header("Style-drift trend")
     resp = api("GET", f"/courses/{course['id']}/submissions")
     submissions = resp.json() if resp.status_code == 200 else []
     rows = [
@@ -255,14 +311,18 @@ def tab_style_trends(course: dict):
         if (s.get("components") or {}).get("style_drift") is not None
     ]
     if not rows:
-        st.info("No data yet.")
+        empty_state("📈", "No style-drift data yet.")
         return
 
     df = pd.DataFrame(rows)
     fig = px.scatter(
         df, x="submitted_at", y="style_drift", color="student_id", hover_data=["filename"],
-        title="Writing-style drift over time, per student",
+        color_discrete_sequence=["#6366f1", "#f472b6", "#22d3ee", "#facc15", "#4ade80"],
     )
+    fig.update_traces(marker={"size": 11, "line": {"width": 1, "color": "#0b0e14"}})
+    fig.update_layout(**_PLOTLY_LAYOUT, xaxis_title=None, yaxis_title="Drift score")
+    fig.update_xaxes(gridcolor="rgba(255,255,255,0.06)")
+    fig.update_yaxes(gridcolor="rgba(255,255,255,0.06)")
     st.plotly_chart(fig, use_container_width=True)
 
 
@@ -271,19 +331,37 @@ def main():
         require_login()
         return
 
+    email = st.session_state.get("email", "")
+    initial = (email[:1] or "?").upper()
+    header(
+        "Instructor console",
+        right_html=(
+            f'<span class="iq-chip">'
+            f'<span style="width:20px;height:20px;border-radius:50%;background:var(--iq-primary);'
+            f'display:inline-flex;align-items:center;justify-content:center;font-size:11px;'
+            f'font-weight:700;color:white;">{initial}</span>{email}</span>'
+        ),
+    )
+
     with st.sidebar:
-        if st.button("Log out"):
+        if st.button(":material/logout: Log out", use_container_width=True):
             st.session_state.clear()
             st.rerun()
+        st.divider()
 
     course = course_picker()
     if course is None:
-        st.info("Create or select a course in the sidebar to get started.")
+        empty_state("🏫", "Create or select a course in the sidebar to get started.")
         return
 
     student = student_picker(course)
 
-    tabs = st.tabs(["Upload & Analyze", "Flagged Submissions", "Style Trends", "Retrain Model"])
+    tabs = st.tabs([
+        ":material/upload_file: Upload & Analyze",
+        ":material/flag: Flagged Submissions",
+        ":material/show_chart: Style Trends",
+        ":material/model_training: Retrain Model",
+    ])
     with tabs[0]:
         tab_upload(course, student)
     with tabs[1]:

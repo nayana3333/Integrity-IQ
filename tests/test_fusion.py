@@ -1,6 +1,6 @@
 import tempfile
 
-from app.fusion import RiskFusionModel, Severity, FEATURE_NAMES
+from app.fusion import FEATURE_NAMES, RiskFusionModel, Severity
 from app.fusion.risk_model import MIN_LABELS_TO_TRAIN
 
 

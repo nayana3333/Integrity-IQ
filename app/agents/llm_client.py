@@ -28,8 +28,6 @@ class GraniteClient:
 
     # -- watsonx.ai (IBM Cloud Lite) --------------------------------------
     def _generate_watsonx(self, prompt: str, max_new_tokens: int, temperature: float) -> str:
-        from ibm_watsonx_ai import Credentials
-        from ibm_watsonx_ai.foundation_models import ModelInference
 
         api_key = os.environ["WATSONX_API_KEY"]
         project_id = os.environ["WATSONX_PROJECT_ID"]

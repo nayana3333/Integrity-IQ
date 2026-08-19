@@ -67,7 +67,9 @@ def extract_style_vector(text: str) -> dict[str, float]:
 
     try:
         flesch = textstat.flesch_reading_ease(text) if text.strip() else 0.0
-    except Exception:
+    except Exception:  # noqa: BLE001 - textstat's syllable counter can raise on
+        # unusual/degenerate input (e.g. no vowels); readability is one signal
+        # of ~15, not worth failing the whole feature vector over.
         flesch = 0.0
 
     comma = text.count(",") / n_words * 100

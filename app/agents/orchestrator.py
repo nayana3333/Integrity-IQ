@@ -10,7 +10,7 @@ edges away, not a rewrite.
 """
 from __future__ import annotations
 
-from typing import Optional, TypedDict
+from typing import TypedDict
 
 from langgraph.graph import END, StateGraph
 
@@ -26,8 +26,8 @@ class IntegrityCheckState(TypedDict):
     student_label: str
     assignment_title: str
     text: str
-    detection_result: Optional[DetectionResult]
-    report: Optional[str]
+    detection_result: DetectionResult | None
+    report: str | None
 
 
 def _build_graph(pipeline: DetectionPipeline, explainer: ExplanationAgent):

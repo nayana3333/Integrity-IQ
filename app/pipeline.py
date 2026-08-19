@@ -13,7 +13,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 from app.ai_detector import AITextDetector
-from app.embeddings import VectorStore, SimilarityMatch
+from app.embeddings import SimilarityMatch, VectorStore
 from app.fusion import RiskFusionModel, RiskReport
 from app.ingestion.parser import chunk_text
 from app.stylometry import DriftResult, StyleProfile

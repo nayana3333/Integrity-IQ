@@ -1,3 +1,3 @@
-from .vector_store import VectorStore, SimilarityMatch, get_embedder
+from .vector_store import SimilarityMatch, VectorStore, get_embedder
 
-__all__ = ["VectorStore", "SimilarityMatch", "get_embedder"]
+__all__ = ["SimilarityMatch", "VectorStore", "get_embedder"]

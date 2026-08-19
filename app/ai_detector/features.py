@@ -68,7 +68,7 @@ def extract_ai_features(text: str, max_sentences: int = 30) -> dict[str, float]:
     log_likelihoods = [ll for s in sentences if (ll := _sentence_log_likelihood(s)) is not None]
 
     if not log_likelihoods:
-        return {name: 0.0 for name in AI_FEATURE_NAMES}
+        return dict.fromkeys(AI_FEATURE_NAMES, 0.0)
 
     mean_ll = sum(log_likelihoods) / len(log_likelihoods)
     mean_perplexity = math.exp(-mean_ll)
@@ -82,7 +82,7 @@ def extract_ai_features(text: str, max_sentences: int = 30) -> dict[str, float]:
 
     words = text.split()
     n_words = max(len(words), 1)
-    type_token_ratio = len(set(w.lower() for w in words)) / n_words
+    type_token_ratio = len({w.lower() for w in words}) / n_words
     avg_sentence_len = n_words / max(len(sentences), 1)
 
     return {

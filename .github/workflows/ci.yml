@@ -28,4 +28,4 @@ jobs:
       - name: Lint
         run: |
           pip install ruff
-          ruff check app tests
+          ruff check app dashboard eval tests

@@ -146,7 +146,7 @@ class VectorStore:
             return {}
 
         candidate_embeddings = self._embeddings[course_mask]
-        candidate_meta = [m for m, keep in zip(self._meta, course_mask) if keep]
+        candidate_meta = [m for m, keep in zip(self._meta, course_mask, strict=True) if keep]
 
         texts = [c.text for c in chunks]
         query_embeddings = self._embedder.encode(texts, normalize_embeddings=True).astype(np.float32)

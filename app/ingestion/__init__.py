@@ -1,3 +1,3 @@
-from .parser import extract_text, chunk_text, Chunk
+from .parser import Chunk, chunk_text, extract_text
 
-__all__ = ["extract_text", "chunk_text", "Chunk"]
+__all__ = ["Chunk", "chunk_text", "extract_text"]

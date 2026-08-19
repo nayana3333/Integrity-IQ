@@ -21,7 +21,7 @@ class Instructor(Base):
     hashed_password: Mapped[str] = mapped_column(String)
     name: Mapped[str] = mapped_column(String)
 
-    courses: Mapped[list["Course"]] = relationship(back_populates="instructor")
+    courses: Mapped[list[Course]] = relationship(back_populates="instructor")
 
 
 class Course(Base):
@@ -33,8 +33,8 @@ class Course(Base):
     instructor_id: Mapped[str] = mapped_column(ForeignKey("instructors.id"))
 
     instructor: Mapped[Instructor] = relationship(back_populates="courses")
-    students: Mapped[list["Student"]] = relationship(back_populates="course")
-    submissions: Mapped[list["Submission"]] = relationship(back_populates="course")
+    students: Mapped[list[Student]] = relationship(back_populates="course")
+    submissions: Mapped[list[Submission]] = relationship(back_populates="course")
 
 
 class Student(Base):
@@ -46,8 +46,8 @@ class Student(Base):
     course_id: Mapped[str] = mapped_column(ForeignKey("courses.id"))
 
     course: Mapped[Course] = relationship(back_populates="students")
-    submissions: Mapped[list["Submission"]] = relationship(back_populates="student")
-    style_profile: Mapped["StyleProfileRecord | None"] = relationship(
+    submissions: Mapped[list[Submission]] = relationship(back_populates="student")
+    style_profile: Mapped[StyleProfileRecord | None] = relationship(
         back_populates="student", uselist=False
     )
 
@@ -70,8 +70,8 @@ class Submission(Base):
 
     course: Mapped[Course] = relationship(back_populates="submissions")
     student: Mapped[Student] = relationship(back_populates="submissions")
-    similarity_flags: Mapped[list["SimilarityFlag"]] = relationship(back_populates="submission")
-    verdict: Mapped["InstructorVerdict | None"] = relationship(
+    similarity_flags: Mapped[list[SimilarityFlag]] = relationship(back_populates="submission")
+    verdict: Mapped[InstructorVerdict | None] = relationship(
         back_populates="submission", uselist=False
     )
 

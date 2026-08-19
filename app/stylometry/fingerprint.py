@@ -24,13 +24,13 @@ from .features import FEATURE_NAMES, extract_style_vector
 class StyleProfile:
     student_id: str
     n_samples: int = 0
-    mean: dict[str, float] = field(default_factory=lambda: {f: 0.0 for f in FEATURE_NAMES})
-    _m2: dict[str, float] = field(default_factory=lambda: {f: 0.0 for f in FEATURE_NAMES})
+    mean: dict[str, float] = field(default_factory=lambda: dict.fromkeys(FEATURE_NAMES, 0.0))
+    _m2: dict[str, float] = field(default_factory=lambda: dict.fromkeys(FEATURE_NAMES, 0.0))
 
     @property
     def variance(self) -> dict[str, float]:
         if self.n_samples < 2:
-            return {f: 0.0 for f in FEATURE_NAMES}
+            return dict.fromkeys(FEATURE_NAMES, 0.0)
         return {f: self._m2[f] / (self.n_samples - 1) for f in FEATURE_NAMES}
 
     def update(self, text: str) -> dict[str, float]:
@@ -45,7 +45,7 @@ class StyleProfile:
             self._m2[f] += delta * delta2
         return vec
 
-    def score(self, text: str, min_samples_for_confidence: int = 3) -> "DriftResult":
+    def score(self, text: str, min_samples_for_confidence: int = 3) -> DriftResult:
         vec = extract_style_vector(text)
         variance = self.variance
         z_scores: dict[str, float] = {}
@@ -82,7 +82,7 @@ class StyleProfile:
         }
 
     @classmethod
-    def from_dict(cls, data: dict) -> "StyleProfile":
+    def from_dict(cls, data: dict) -> StyleProfile:
         profile = cls(student_id=data["student_id"], n_samples=data["n_samples"])
         profile.mean = data["mean"]
         profile._m2 = data["m2"]

@@ -13,7 +13,7 @@ differently calibrated models because their instructors' feedback differs.
 """
 from __future__ import annotations
 
-from app.fusion import RiskFusionModel, FEATURE_NAMES
+from app.fusion import FEATURE_NAMES, RiskFusionModel
 
 
 class FeedbackLoopAgent:

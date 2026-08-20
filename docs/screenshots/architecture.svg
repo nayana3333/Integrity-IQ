@@ -1,0 +1,113 @@
+<svg viewBox="0 0 1200 640" xmlns="http://www.w3.org/2000/svg" font-family="Inter, -apple-system, Segoe UI, sans-serif">
+  <defs>
+    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#5b6478"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="640" fill="#0b0e14"/>
+
+  <!-- Title -->
+  <g transform="translate(32,36)">
+    <rect x="0" y="0" width="34" height="34" rx="9" fill="url(#mark)"/>
+    <text x="17" y="24" text-anchor="middle" font-size="18">🛡️</text>
+    <text x="46" y="16" fill="#e6e8ee" font-size="19" font-weight="800">IntegrityIQ</text>
+    <text x="46" y="34" fill="#9099ab" font-size="12.5">System architecture</text>
+  </g>
+
+  <!-- Dashboard -->
+  <g transform="translate(60,110)">
+    <rect width="220" height="80" rx="12" fill="#141922" stroke="#252b38" stroke-width="1.5"/>
+    <text x="110" y="34" text-anchor="middle" fill="#e6e8ee" font-size="14" font-weight="700">Streamlit Dashboard</text>
+    <text x="110" y="54" text-anchor="middle" fill="#9099ab" font-size="11.5">instructor console</text>
+  </g>
+
+  <!-- FastAPI -->
+  <g transform="translate(370,110)">
+    <rect width="300" height="80" rx="12" fill="#141922" stroke="#6366f1" stroke-width="1.5"/>
+    <text x="150" y="30" text-anchor="middle" fill="#e6e8ee" font-size="14" font-weight="700">FastAPI</text>
+    <text x="150" y="50" text-anchor="middle" fill="#9099ab" font-size="11">auth · courses · submissions · feedback</text>
+    <text x="150" y="66" text-anchor="middle" fill="#9099ab" font-size="11">/docs Swagger UI</text>
+  </g>
+
+  <!-- arrow dashboard <-> api -->
+  <line x1="280" y1="150" x2="368" y2="150" stroke="#5b6478" stroke-width="1.5" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+
+  <!-- LangGraph -->
+  <g transform="translate(370,236)">
+    <rect width="300" height="76" rx="12" fill="#1a2029" stroke="#252b38" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <text x="150" y="24" text-anchor="middle" fill="#a5adc0" font-size="11" font-weight="700" letter-spacing="0.5">LANGGRAPH ORCHESTRATION</text>
+    <g transform="translate(40,36)">
+      <rect width="90" height="28" rx="7" fill="#6366f1"/>
+      <text x="45" y="19" text-anchor="middle" fill="white" font-size="12" font-weight="600">detect</text>
+    </g>
+    <line x1="132" y1="50" x2="168" y2="50" stroke="#7c86a1" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <g transform="translate(170,36)">
+      <rect width="90" height="28" rx="7" fill="#8b5cf6"/>
+      <text x="45" y="19" text-anchor="middle" fill="white" font-size="12" font-weight="600">explain</text>
+    </g>
+  </g>
+  <line x1="520" y1="190" x2="520" y2="234" stroke="#5b6478" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Granite -->
+  <g transform="translate(730,236)">
+    <rect width="220" height="76" rx="12" fill="#141922" stroke="#052fad" stroke-width="1.5"/>
+    <text x="110" y="30" text-anchor="middle" fill="#e6e8ee" font-size="13.5" font-weight="700">IBM Granite</text>
+    <text x="110" y="50" text-anchor="middle" fill="#9099ab" font-size="11">watsonx.ai / local</text>
+    <text x="110" y="65" text-anchor="middle" fill="#9099ab" font-size="11">evidence-cited reports</text>
+  </g>
+  <line x1="672" y1="270" x2="728" y2="270" stroke="#5b6478" stroke-width="1.5" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+
+  <!-- DetectionPipeline -->
+  <g transform="translate(370,352)">
+    <rect width="300" height="40" rx="10" fill="#141922" stroke="#252b38" stroke-width="1.5"/>
+    <text x="150" y="25" text-anchor="middle" fill="#e6e8ee" font-size="13" font-weight="700">DetectionPipeline</text>
+  </g>
+  <line x1="520" y1="312" x2="520" y2="350" stroke="#5b6478" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- three signals -->
+  <g transform="translate(80,452)">
+    <rect width="220" height="92" rx="12" fill="#141922" stroke="#4ade80" stroke-width="1.5"/>
+    <text x="110" y="26" text-anchor="middle" fill="#e6e8ee" font-size="13" font-weight="700">Semantic Similarity</text>
+    <text x="110" y="46" text-anchor="middle" fill="#9099ab" font-size="10.5">MiniLM embeddings</text>
+    <text x="110" y="62" text-anchor="middle" fill="#9099ab" font-size="10.5">NumPy cosine index</text>
+    <text x="110" y="80" text-anchor="middle" fill="#4ade80" font-size="10.5" font-weight="700">F1 0.99 · ROC-AUC 1.00</text>
+  </g>
+  <g transform="translate(340,452)">
+    <rect width="220" height="92" rx="12" fill="#141922" stroke="#4ade80" stroke-width="1.5"/>
+    <text x="110" y="26" text-anchor="middle" fill="#e6e8ee" font-size="13" font-weight="700">AI-Text Detector</text>
+    <text x="110" y="46" text-anchor="middle" fill="#9099ab" font-size="10.5">GPT-2 perplexity</text>
+    <text x="110" y="62" text-anchor="middle" fill="#9099ab" font-size="10.5">+ burstiness features</text>
+    <text x="110" y="80" text-anchor="middle" fill="#4ade80" font-size="10.5" font-weight="700">F1 0.95 · ROC-AUC 0.99</text>
+  </g>
+  <g transform="translate(600,452)">
+    <rect width="220" height="92" rx="12" fill="#141922" stroke="#fbbf24" stroke-width="1.5"/>
+    <text x="110" y="26" text-anchor="middle" fill="#e6e8ee" font-size="13" font-weight="700">Stylometric Drift</text>
+    <text x="110" y="46" text-anchor="middle" fill="#9099ab" font-size="10.5">per-student fingerprint</text>
+    <text x="110" y="62" text-anchor="middle" fill="#9099ab" font-size="10.5">Welford online stats</text>
+    <text x="110" y="80" text-anchor="middle" fill="#fbbf24" font-size="10.5" font-weight="700">F1 0.69 · ROC-AUC 0.65</text>
+  </g>
+
+  <line x1="470" y1="392" x2="190" y2="450" stroke="#5b6478" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="500" y1="392" x2="450" y2="450" stroke="#5b6478" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="560" y1="392" x2="710" y2="450" stroke="#5b6478" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- RiskFusionModel -->
+  <g transform="translate(860,452)">
+    <rect width="260" height="92" rx="12" fill="#141922" stroke="#6366f1" stroke-width="1.5"/>
+    <text x="130" y="26" text-anchor="middle" fill="#e6e8ee" font-size="13" font-weight="700">RiskFusionModel</text>
+    <text x="130" y="46" text-anchor="middle" fill="#9099ab" font-size="10.5">per-course logistic regression</text>
+    <text x="130" y="62" text-anchor="middle" fill="#9099ab" font-size="10.5">retrains on instructor feedback</text>
+    <text x="130" y="80" text-anchor="middle" fill="#a5adc0" font-size="10.5" font-weight="700">→ risk score + severity</text>
+  </g>
+  <line x1="822" y1="498" x2="858" y2="498" stroke="#5b6478" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Legend -->
+  <g transform="translate(60,588)">
+    <text fill="#626b7d" font-size="11">Three independent signals evaluated against public benchmarks (HC3 · PAWS · ELI5 authorship-attribution), fused into one calibrated, adaptive risk score.</text>
+  </g>
+</svg>

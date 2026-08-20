@@ -4,13 +4,12 @@
 
 **An adaptive, multi-signal academic-integrity platform — not another string-matching plagiarism scanner.**
 
-[![CI](https://github.com/nayana3333/IntegrityIQ/actions/workflows/ci.yml/badge.svg)](https://github.com/nayana3333/IntegrityIQ/actions/workflows/ci.yml)
+[![CI](https://github.com/nayana3333/Integrity-IQ/actions/workflows/ci.yml/badge.svg)](https://github.com/nayana3333/Integrity-IQ/actions/workflows/ci.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/backend-FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Streamlit](https://img.shields.io/badge/dashboard-Streamlit-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
 [![LangGraph](https://img.shields.io/badge/agents-LangGraph-1C3C3C)](https://langchain-ai.github.io/langgraph/)
 [![IBM Granite](https://img.shields.io/badge/LLM-IBM%20Granite-052FAD?logo=ibm&logoColor=white)](https://www.ibm.com/granite)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 [Overview](#overview) · [Demo](#demo) · [How it works](#how-it-works) · [Evaluation](#evaluation) · [Quick start](#quick-start) · [Architecture](#architecture--design-decisions)
 
@@ -28,18 +27,11 @@ Built as the capstone project for the **IBM SkillsBuild × AICTE × Edunet Found
 
 ## Demo
 
-> 📸 **Screenshots and a walkthrough video go here.** The app is fully working locally (see [Quick start](#quick-start)) — screenshots of the login screen, an upload + risk report, the flagged-submissions list, and the style-drift chart belong in `docs/screenshots/`, referenced below. A 60–90s screen recording of the golden path (upload → risk score → flagged evidence → confirm/reject → retrain) is the single most persuasive thing in this README; add it above the fold once captured.
+<p align="center">
+  <img src="docs/screenshots/architecture.svg" alt="IntegrityIQ system architecture" width="850">
+</p>
 
-<!--
-Once captured, replace this block with something like:
-
-![Login screen](docs/screenshots/01-login.png)
-![Upload & risk report](docs/screenshots/02-upload-report.png)
-![Flagged submissions](docs/screenshots/03-flagged.png)
-![Style-drift trend](docs/screenshots/04-style-trend.png)
-
-https://github.com/user-attachments/assets/<demo-video-id>
--->
+Full instructor dashboard walkthrough (login → upload → risk report → flagged evidence → retrain) — clone and run locally in under two minutes with [Quick start](#quick-start).
 
 ## How it works
 
@@ -143,8 +135,8 @@ Design choices worth calling out (all deliberate, not defaults):
 ## Quick start
 
 ```bash
-git clone https://github.com/nayana3333/IntegrityIQ.git
-cd IntegrityIQ
+git clone https://github.com/nayana3333/Integrity-IQ.git
+cd Integrity-IQ
 
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
@@ -220,10 +212,6 @@ Full interactive docs (Swagger UI) are auto-generated at **`/docs`** when the AP
 ## Contributing
 
 This started as a solo capstone project, but issues and PRs are welcome — particularly around the roadmap items above. Please run `pytest` and `ruff check .` before opening a PR; CI enforces both.
-
-## License
-
-[MIT](LICENSE) © 2026 Nayana S
 
 ## Credits
 

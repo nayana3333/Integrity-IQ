@@ -2,9 +2,8 @@
 
 Uses a fake GraniteClient (no network/model download) so this stays fast and
 deterministic - the real watsonx/local Granite backends are exercised
-manually (see docs/RESUME_AND_INTERVIEW_PREP.md demo instructions), not in
-the unit-test suite, since they need either cloud credentials or a
-multi-gigabyte local model download.
+manually (see deploy/DEPLOY.md), not in the unit-test suite, since they
+need either cloud credentials or a multi-gigabyte local model download.
 """
 import tempfile
 

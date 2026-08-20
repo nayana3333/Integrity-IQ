@@ -220,7 +220,7 @@ def render_submission_report(result: dict):
     st.markdown(
         f"""
         <div class="iq-panel">
-            <div class="iq-panel-label">:material/description: Instructor report</div>
+            <div class="iq-panel-label">📄 Instructor report</div>
             {result.get('explanation') or '<em>No report generated.</em>'}
         </div>
         """,
